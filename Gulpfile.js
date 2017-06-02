@@ -6,7 +6,8 @@ var gulp = require('gulp'),
 	argv = require('yargs').argv
 	gulpif = require('gulp-if')
 	concat = require('gulp-concat')
-	uglify = require('gulp-uglify');
+	uglify = require('gulp-uglify')
+	imagemin = require('gulp-imagemin');
 
 var isProduction = false;
 if(argv.prod){
@@ -16,7 +17,8 @@ if(argv.prod){
 var config = {
 	scssDir: './assets/scss',
 	cssDir: './assets/css',
-	jsDir: './assets/js'
+	jsDir: './assets/js',
+	imgDir: './assets/img'
 };
 
 gulp.task('style', function(){
@@ -44,6 +46,16 @@ gulp.task('compress', ['concat'], function(){
 	.on('error', console.error.bind(console))
 	.pipe(gulp.dest(config.jsDir + '/min'))
 });
+
+gulp.task('imagemin', function(){
+	return gulp.src([
+			config.imgDir + '/*'.png,
+			config.imgDir + '/*'.jpg,
+			config.imgDir + '/*'.jepg
+		])
+		.pipe(imagemin())
+		.pipe(gulp.dest(config.imgDir + '/'))
+})
 
 gulp.task('watch', function(){
 	watch(config.scssDir + '/**/*.scss', function(){
