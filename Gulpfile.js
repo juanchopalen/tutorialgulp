@@ -1,13 +1,15 @@
 var gulp = require('gulp'),
 	sass = require('gulp-sass'),
-	watch = require('gulp-watch')
-	sourcemaps = require('gulp-sourcemaps')
-	cssnano = require('gulp-cssnano')
-	argv = require('yargs').argv
-	gulpif = require('gulp-if')
-	concat = require('gulp-concat')
-	uglify = require('gulp-uglify')
-	imagemin = require('gulp-imagemin');
+	watch = require('gulp-watch'),
+	sourcemaps = require('gulp-sourcemaps'),
+	cssnano = require('gulp-cssnano'),
+	argv = require('yargs').argv,
+	gulpif = require('gulp-if'),
+	concat = require('gulp-concat'),
+	uglify = require('gulp-uglify'),
+	imagemin = require('gulp-imagemin'),
+	browserify = require('browserify'),
+	transform = require('vinyl-source-stream');
 
 var isProduction = false;
 if(argv.prod){
@@ -49,13 +51,19 @@ gulp.task('compress', ['concat'], function(){
 
 gulp.task('imagemin', function(){
 	return gulp.src([
-			config.imgDir + '/*'.png,
-			config.imgDir + '/*'.jpg,
-			config.imgDir + '/*'.jepg
-		])
+        config.imgDir + '/*.{png,jpg,jpeg}',
+        '!' + config.imgDir + '/cabo-14.jpg'
+    ])
 		.pipe(imagemin())
 		.pipe(gulp.dest(config.imgDir + '/'))
 })
+
+gulp.task('browserify', function(){
+	return browserify(config.jsDir + '/src/main.js')
+	.bundle()
+	.pipe(transform('bundle.js'))
+	.pipe(gulp.dest(config.jsDir + '/min/'))
+});
 
 gulp.task('watch', function(){
 	watch(config.scssDir + '/**/*.scss', function(){
