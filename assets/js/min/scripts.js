@@ -1,1 +1,1 @@
-"use strict";function first_test(){return"This is a test"}var firstTest=first_test();if(void 0==firstTest)var second_test=function(){return firstTest};var square=function(t){return t*t};
+"use strict";function first_test(){return"This is a test"}var firstTest=first_test();if(void 0==firstTest)var second_test=function(){return firstTest};var square=function(t){return t*t};alert("test");

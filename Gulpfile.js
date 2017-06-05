@@ -9,7 +9,8 @@ var gulp = require('gulp'),
 	uglify = require('gulp-uglify'),
 	imagemin = require('gulp-imagemin'),
 	browserify = require('browserify'),
-	transform = require('vinyl-source-stream');
+	transform = require('vinyl-source-stream'),
+	sync = require('browser-sync').create();
 
 var isProduction = false;
 if(argv.prod){
@@ -29,7 +30,8 @@ gulp.task('style', function(){
 	.pipe(sass())
 	.on('error', sass.logError)
 	.pipe(gulpif(isProduction, cssnano(), sourcemaps.write('maps') ))
-	.pipe(gulp.dest(config.cssDir));
+	.pipe(gulp.dest(config.cssDir))
+	.pipe(sync.stream());
 });
 
 gulp.task('concat', function(){
@@ -65,8 +67,22 @@ gulp.task('browserify', function(){
 	.pipe(gulp.dest(config.jsDir + '/min/'))
 });
 
-gulp.task('watch', function(){
-	watch(config.scssDir + '/**/*.scss', function(){
-		gulp.start('style');
-	});
+gulp.task('js-sync', ['compress'], function(){
+	sync.reload();
 });
+
+gulp.task('browsersync', ['compress', 'style'], function(){
+	sync.init({
+		proxy: "gulp.dev"
+	});
+
+	gulp.watch('./*.html').on('change', sync.reload);
+	gulp.watch(config.scssDir + '/**/*.scss', ['style']);
+	gulp.watch(config.jsDir + '/*.js', ['js-sync']);
+});
+
+//gulp.task('watch', function(){
+//	watch(config.scssDir + '/**/*.scss', function(){
+//		gulp.start('style');
+//	});
+//});
